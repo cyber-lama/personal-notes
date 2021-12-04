@@ -1,0 +1,15 @@
+FROM golang:1.17.3-alpine
+
+WORKDIR /usr/src/app
+
+COPY go.mod ./
+COPY go.sum ./
+
+RUN go mod download
+
+RUN apk add nodejs
+RUN apk add nano
+RUN apk add --update npm
+RUN npm install -g nodemon
+
+COPY . .

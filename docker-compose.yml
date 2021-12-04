@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: cocash-frontend
+    command: serve -s build -l 3000
+    restart: unless-stopped
+    networks:
+      - cocash-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.prod
+    container_name: cocash-api
+    command: go run main.go
+    environment:
+      - PORT=3001
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=test21
+      - DB_NAME=postgres
+    volumes:
+      - ./api:/usr/src/app
+    links:
+      - db
+    depends_on:
+      - cocash-postgres
+    restart: unless-stopped
+    networks:
+      - cocash-network
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: cocash-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - cocash-frontend
+      - cocash-api
+      - cocash-postgres
+    networks:
+      - cocash-network
+
+  db:
+    image: postgres:14.1-alpine
+    container_name: cocash-postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "test21"
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - cocash-network
+
+volumes:
+  postgres_db:
+
+networks:
+  cocash-network:
+    driver: bridge
