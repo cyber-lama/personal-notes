@@ -1,6 +1,7 @@
 package routes
 
 import (
+    "os"
     "net/http"
 	"github.com/gorilla/mux"
 	"encoding/json"
@@ -25,6 +26,11 @@ func testRes (w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleReq () {
+    // port from docker-compose environment
+    httpPort := os.Getenv("PORT")
+
     r := mux.NewRouter().StrictSlash(true)
     r.HandleFunc("/test", testRes).Methods("GET")
+
+    http.ListenAndServe(":" + httpPort, r)
 }
