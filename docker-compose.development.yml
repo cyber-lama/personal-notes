@@ -15,7 +15,6 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile.dev
-    container_name: cocash-api
     command: nodemon --watch './**/*.go' --signal SIGTERM --exec 'go' run /usr/src/app/main.go
 
   nginx:

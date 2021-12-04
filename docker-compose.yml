@@ -5,17 +5,17 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: cocash-frontend
+    container_name: notes-frontend
     command: serve -s build -l 3000
     restart: unless-stopped
     networks:
-      - cocash-network
+      - notes-network
 
   api:
     build:
       context: ./api
       dockerfile: Dockerfile.prod
-    container_name: cocash-api
+    container_name: notes-api
     command: go run main.go
     environment:
       - PORT=3001
@@ -29,28 +29,28 @@ services:
     links:
       - db
     depends_on:
-      - cocash-postgres
+      - db
     restart: unless-stopped
     networks:
-      - cocash-network
+      - notes-network
 
   nginx:
     image: nginx:stable-alpine
-    container_name: cocash-nginx
+    container_name: notes-nginx
     ports:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf.prod:/etc/nginx/conf.d/nginx.conf
     depends_on:
-      - cocash-frontend
-      - cocash-api
-      - cocash-postgres
+      - frontend
+      - api
+      - db
     networks:
-      - cocash-network
+      - notes-network
 
   db:
     image: postgres:14.1-alpine
-    container_name: cocash-postgres
+    container_name: notes-postgres
     environment:
       POSTGRES_DB: "postgres"
       POSTGRES_USER: "user"
@@ -60,11 +60,11 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - cocash-network
+      - notes-network
 
 volumes:
   postgres_db:
 
 networks:
-  cocash-network:
+  notes-network:
     driver: bridge

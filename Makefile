@@ -5,13 +5,13 @@ prod:
 	docker-compose up --build
 
 logs-frontend:
-	docker logs --follow cocash-frontend
+	docker logs --follow notes-frontend
 
 logs-api:
-	docker logs --follow cocash-api
+	docker logs --follow notes-api
 
 exec-api:
-	docker exec -it cocash-api /bin/sh
+	docker exec -it notes-api /bin/sh
 
 exec-frontend:
-	docker exec -it cocash-frontend /bin/sh
+	docker exec -it notes-frontend /bin/sh
