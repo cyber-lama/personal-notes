@@ -1,5 +1,5 @@
 dev:
-	docker-compose -f docker-compose.yml -f docker-compose.development.yml up --build
+	docker-compose -f docker-compose.yml -f docker-compose.development.yml up -d && docker logs --follow notes-api
 
 prod:
 	docker-compose up --build
