@@ -16,7 +16,7 @@ services:
       context: ./api
       dockerfile: Dockerfile.prod
     container_name: notes-api
-    command: go run main.go
+    command: go build -v ./cmd/apiserver && ./apiserver
     environment:
       - PORT=3001
       - DB_HOST=db
@@ -24,6 +24,7 @@ services:
       - DB_USER=user
       - DB_PASSWORD=test21
       - DB_NAME=postgres
+      - LOG_LEVEL=debug
     volumes:
       - ./api:/usr/src/app
     links:
