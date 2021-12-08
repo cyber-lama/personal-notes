@@ -4,25 +4,39 @@ import (
     "net/http"
 	"os"
 	"github.com/sirupsen/logrus"
+	"github.com/cyber-lama/personal-notes/api/internal/store"
 	"github.com/gorilla/mux"
 )
 
 type APIserver struct {
-	httpPort string
-	logLevel string
+	confHttpPort string
+	confLogLevel string
+	confStore *store.DBConfig
 	logger *logrus.Logger
 	router *mux.Router
+	store *store.Store
 }
 
 func New() *APIserver {
-	httpPort := os.Getenv("PORT")
+    //the port we will listen to
+	confHttpPort := os.Getenv("PORT")
+	// debug level
 	lvl := os.Getenv("LOG_LEVEL")
 	if lvl == "" {
 	    lvl = "debug"
 	}
+	// db conf obj
+	cnfStr := store.DBConfig{}
+	cnfStr.Host = os.Getenv("DB_HOST")
+	cnfStr.Port = os.Getenv("DB_PORT")
+	cnfStr.User = os.Getenv("DB_USER")
+	cnfStr.Password = os.Getenv("DB_PASSWORD")
+	cnfStr.DBname = os.Getenv("DB_NAME")
+
 	return &APIserver{
-		httpPort: ":" + httpPort,
-		logLevel: lvl,
+		confHttpPort: ":" + confHttpPort,
+		confLogLevel: lvl,
+		confStore: &cnfStr,
 		logger: logrus.New(),
 		router: mux.NewRouter(),
 	}
@@ -34,14 +48,16 @@ func (s *APIserver) Start() error {
     }
 
     s.configureRouter()
+    if err := s.configureStore(); err != nil {
+        return err
+    }
+    s.logger.Info("Server up and listen port" + s.confHttpPort)
 
-    s.logger.Info("Server up and listen port" + s.httpPort)
-
-    return http.ListenAndServe(s.httpPort, s.router)
+    return http.ListenAndServe(s.confHttpPort, s.router)
 }
 
 func (s *APIserver) configureLogLevel () error {
-    level, err := logrus.ParseLevel(s.logLevel)
+    level, err := logrus.ParseLevel(s.confLogLevel)
     if err != nil {
         return err
     }
@@ -51,6 +67,18 @@ func (s *APIserver) configureLogLevel () error {
 
 func (s *APIserver) configureRouter() {
     s.router.HandleFunc("/test", s.handleHello())
+}
+
+func (s *APIserver) configureStore() error {
+    
+    st := store.New(s.confStore)
+    if err := st.Open(); err != nil {
+        return err
+    }
+
+    s.store = st
+    s.logger.Info("DB connected and ready!")
+    return nil
 }
 
 func (s *APIserver) handleHello() http.HandlerFunc{
