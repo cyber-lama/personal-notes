@@ -48,11 +48,12 @@ func (s *APIserver) Start() error {
     }
 
     s.configureRouter()
+
     if err := s.configureStore(); err != nil {
         return err
     }
-    s.logger.Info("Server up and listen port" + s.confHttpPort)
 
+    s.logger.Info("Server up and listen port" + s.confHttpPort)
     return http.ListenAndServe(s.confHttpPort, s.router)
 }
 
