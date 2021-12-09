@@ -15,7 +15,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile.dev
-    command: nodemon --watch './**/*.go' --signal SIGTERM --exec 'go' run /usr/src/app/cmd/apiserver/main.go
+    command: air -c .air.toml
 
   nginx:
     volumes:

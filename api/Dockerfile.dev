@@ -7,9 +7,6 @@ COPY go.sum ./
 
 RUN go mod download
 
-RUN apk add nodejs
-RUN apk add nano
-RUN apk add --update npm
-RUN npm install -g nodemon
+RUN go get github.com/cosmtrek/air
 
 COPY . .
