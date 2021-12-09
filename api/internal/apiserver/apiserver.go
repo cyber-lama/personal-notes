@@ -26,7 +26,7 @@ func New() *APIserver {
 		lvl = "debug"
 	}
 	// db conf obj
-	cnfStr := store.DBConfig{}
+	cnfStr := &store.DBConfig{}
 	cnfStr.Host = os.Getenv("DB_HOST")
 	cnfStr.Port = os.Getenv("DB_PORT")
 	cnfStr.User = os.Getenv("DB_USER")
@@ -36,7 +36,7 @@ func New() *APIserver {
 	return &APIserver{
 		confHttpPort: ":" + confHttpPort,
 		confLogLevel: lvl,
-		confStore:    &cnfStr,
+		confStore:    cnfStr,
 		logger:       logrus.New(),
 		router:       mux.NewRouter(),
 	}
