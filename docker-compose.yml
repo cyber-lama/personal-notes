@@ -27,6 +27,7 @@ services:
       - LOG_LEVEL=debug
     volumes:
       - ./api:/usr/src/app
+      - ${GOPATH}/pkg:/go/pkg
     links:
       - db
     depends_on:
