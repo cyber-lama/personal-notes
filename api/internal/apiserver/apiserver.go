@@ -19,7 +19,7 @@ type APIserver struct {
 
 func New() *APIserver {
 	//the port we will listen to
-	confHttpPort := os.Getenv("PORT")
+	confHttpPort := os.Getenv("API_PORT")
 	// debug level
 	lvl := os.Getenv("LOG_LEVEL")
 	if lvl == "" {
