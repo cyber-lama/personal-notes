@@ -7,13 +7,6 @@ RUN useradd -G sudo,root -u ${docker_id} -d /home/${docker_user} ${docker_user}
 RUN mkdir /home/${docker_user}
 RUN chown ${docker_user}:${docker_user} /home/${docker_user}
 
-WORKDIR /usr/src/app
-
-COPY go.mod ./
-COPY go.sum ./
-
-RUN go mod download
-
 RUN go get github.com/cosmtrek/air
 
-COPY . .
+WORKDIR /usr/src/app
