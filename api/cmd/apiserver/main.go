@@ -1,9 +1,7 @@
 package main
 
 import (
-	"github.com/cyber-lama/personal-notes/api/internal/apiserver"
-	"github.com/joho/godotenv"
-	"log"
+	"fmt"
 )
 
 //"github.com/golang-migrate/migrate"
@@ -28,17 +26,18 @@ import (
 //	return nil
 //}
 
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+//func init() {
+//	err := godotenv.Load()
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//}
 
 func main() {
-	s := apiserver.New()
-
-	if err := s.Start(); err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("test")
+	//s := apiserver.New()
+	//
+	//if err := s.Start(); err != nil {
+	//	log.Fatal(err)
+	//}
 }

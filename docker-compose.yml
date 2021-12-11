@@ -31,7 +31,22 @@ services:
     restart: unless-stopped
     networks:
       - notes-network
-
+  debug:
+    container_name: notes-api-debug
+    build:
+      context: ./api
+      dockerfile: ../debug/Dockerfile
+    ports:
+      - "8080:8080"
+      - "40000:40000"
+    volumes:
+      - ./api:/usr/src/app
+    restart: unless-stopped
+    command: bash -c "dlv --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec /usr/src/app/tmp/main"
+    networks:
+      - notes-network
+    depends_on:
+      - api
   nginx:
     image: nginx:stable-alpine
     container_name: notes-nginx

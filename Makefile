@@ -11,7 +11,7 @@ logs-api:
 	docker logs --follow notes-api
 
 exec-api:
-	docker exec -it notes-api /bin/sh
+	docker exec -it notes-api bash
 
 exec-frontend:
-	docker exec -it notes-frontend /bin/sh
+	docker exec -it notes-frontend bash
