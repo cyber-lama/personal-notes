@@ -78,7 +78,9 @@ func (s *APIserver) configureStore() error {
 	}
 
 	s.store = st
+
 	s.logger.Info("DB connected and ready!")
+
 	return nil
 }
 
