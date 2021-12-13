@@ -18,7 +18,7 @@ services:
       args:
         docker_id: ${DOCKER_UID}
         docker_user: ${DOCKER_USER}
-    command: air -c .air.toml
+    command: air -c .air.toml && migrate
 
   nginx:
     volumes:
