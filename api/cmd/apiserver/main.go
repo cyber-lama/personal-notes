@@ -14,9 +14,8 @@ func init() {
 }
 
 func main() {
-	s := apiserver.New()
-
-	if err := s.Start(); err != nil {
+	conf := apiserver.NewConfig()
+	if err := apiserver.Start(conf); err != nil {
 		log.Fatal(err)
 	}
 }

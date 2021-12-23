@@ -12,4 +12,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 )
 
-require golang.org/x/sys v0.0.0-20211013075003-97ac67df715c // indirect
+require (
+	github.com/go-sanitize/sanitize v1.0.1 // indirect
+	golang.org/x/sys v0.0.0-20211013075003-97ac67df715c // indirect
+)
