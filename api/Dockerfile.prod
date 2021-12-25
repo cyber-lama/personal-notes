@@ -3,8 +3,6 @@ FROM golang:1.17.3
 ARG docker_id
 ARG docker_user
 
-RUN apk add nano
-
 RUN useradd -G sudo,root -u ${docker_id} -d /home/${docker_user} ${docker_user}
 RUN mkdir /home/${docker_user}
 RUN chown ${docker_user}:${docker_user} /home/${docker_user}
