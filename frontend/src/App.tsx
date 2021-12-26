@@ -2,9 +2,8 @@ import * as React from "react";
 import './App.css';
 
 function App() {
-  fetch("api/test").then(res => {
+  fetch("api/register").then(res => {
     console.log(res)
-    console.log("test")
   })
   return (
     <div className="App">

@@ -1,7 +1,7 @@
 package apiserver
 
 import (
-	"github.com/cyber-lama/personal-notes/api/internal/store/sqlstore"
+	"github.com/cyber-lama/personal-notes/api/internal/store"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"log"
@@ -20,8 +20,8 @@ func Start(c *Config) error {
 			log.Fatal(err)
 		}
 	}(db)
-	store := sqlstore.New(db)
-	srv := newServer(store)
+	st := store.New(db)
+	srv := newServer(st)
 
 	return http.ListenAndServe(c.HTTPPort, srv)
 }

@@ -1,7 +1,7 @@
 package apiserver
 
 import (
-	"encoding/json"
+	"github.com/cyber-lama/personal-notes/api/internal/controllers/authcontroller"
 	"github.com/cyber-lama/personal-notes/api/internal/store"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -12,10 +12,10 @@ import (
 type server struct {
 	router *mux.Router
 	logger *logrus.Logger
-	store  store.Store
+	store  *store.Store
 }
 
-func newServer(store store.Store) *server {
+func newServer(store *store.Store) *server {
 	s := &server{
 		router: mux.NewRouter(),
 		logger: logrus.New(),
@@ -27,7 +27,9 @@ func newServer(store store.Store) *server {
 
 func (s *server) configureRouter() {
 	s.router.Use(s.logRequest)
-	s.router.HandleFunc("/test", s.handleUsersCreate()).Methods("GET")
+	authController := authcontroller.New(s.store)
+
+	s.router.HandleFunc("/register", authController.Register()).Methods("GET")
 }
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
@@ -66,26 +68,4 @@ func (s *server) logRequest(next http.Handler) http.Handler {
 			time.Now().Sub(start),
 		)
 	})
-}
-
-type Dog struct {
-	Name string
-}
-
-func (s *server) handleUsersCreate() http.HandlerFunc {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		d := Dog{
-			Name: "Borky Borkins",
-		}
-
-		s.respond(w, r, http.StatusOK, d)
-	}
-}
-
-func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
-	w.WriteHeader(code)
-	if data != nil {
-		json.NewEncoder(w).Encode(data)
-	}
 }
