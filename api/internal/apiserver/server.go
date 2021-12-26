@@ -27,9 +27,10 @@ func newServer(store *store.Store) *server {
 
 func (s *server) configureRouter() {
 	s.router.Use(s.logRequest)
-	authController := authcontroller.New(s.store)
+	//POST
+	authController := authcontroller.New(s.store, s.logger)
+	s.router.HandleFunc("/register", authController.Register()).Methods("POST")
 
-	s.router.HandleFunc("/register", authController.Register()).Methods("GET")
 }
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)

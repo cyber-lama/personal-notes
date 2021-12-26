@@ -2,9 +2,23 @@ import * as React from "react";
 import './App.css';
 
 function App() {
-  fetch("api/register").then(res => {
-    console.log(res)
-  })
+  async function postData(url = '', data = {}) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data) // body data type must match "Content-Type" header
+    });
+    return await response.json(); // parses JSON response into native JavaScript objects
+  }
+  postData('/api/register', { username: "test", email: "test", password: "test" })
+      .then((data) => {
+        console.log(data); // JSON data parsed by `response.json()` call
+      });
   return (
     <div className="App">
       <header className="App-header">

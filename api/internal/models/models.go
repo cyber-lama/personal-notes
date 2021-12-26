@@ -1,7 +1,7 @@
-package model
+package models
 
 import (
-	"github.com/cyber-lama/personal-notes/api/internal/model/user"
+	"github.com/cyber-lama/personal-notes/api/internal/models/user"
 	"github.com/jmoiron/sqlx"
 )
 

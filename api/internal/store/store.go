@@ -5,12 +5,12 @@ import (
 )
 
 type Store struct {
-	db *sqlx.DB
+	DB *sqlx.DB
 }
 
 // New init store struct with db connect
 func New(db *sqlx.DB) *Store {
 	return &Store{
-		db: db,
+		DB: db,
 	}
 }
