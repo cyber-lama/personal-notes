@@ -2,6 +2,7 @@ package authcontroller
 
 import (
 	"encoding/json"
+	"github.com/cyber-lama/personal-notes/api/internal/controllers"
 	"github.com/cyber-lama/personal-notes/api/internal/models/user"
 	"github.com/cyber-lama/personal-notes/api/internal/store"
 	"github.com/go-ozzo/ozzo-validation/v4"
@@ -11,12 +12,15 @@ import (
 )
 
 type AuthController struct {
+	base   *controllers.BaseController
 	db     *store.Store
 	logger *logrus.Logger
 }
 
 func New(db *store.Store, l *logrus.Logger) *AuthController {
+	b := controllers.New()
 	return &AuthController{
+		base:   b,
 		db:     db,
 		logger: l,
 	}
@@ -33,6 +37,7 @@ func (c AuthController) registerValidate(u *user.User) error {
 		),
 		validation.Field(
 			&u.Username,
+			validation.Required.Error("Поле username обязательно для заполнения"),
 			validation.Length(2, 100).Error("Длинна поля username от 2 до 100 символов"),
 		),
 		validation.Field(
@@ -52,7 +57,7 @@ func (c AuthController) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			c.error(w, http.StatusBadRequest, err)
+			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
 		u := &user.User{
@@ -61,28 +66,14 @@ func (c AuthController) Register() http.HandlerFunc {
 			Username: req.Username,
 		}
 		if err := c.registerValidate(u); err != nil {
-			c.error(w, http.StatusBadRequest, err)
+			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
 		res, err := u.Create(c.db.DB, c.logger)
 		if err != nil {
-			c.error(w, http.StatusBadRequest, err)
+			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
-		c.respond(w, http.StatusOK, res)
+		c.base.Respond(w, http.StatusOK, res)
 	}
-}
-func (c AuthController) respond(w http.ResponseWriter, code int, data interface{}) {
-	w.WriteHeader(code)
-	w.Header().Add("Content-Type", "application/json")
-	if data != nil {
-		err := json.NewEncoder(w).Encode(data)
-		if err != nil {
-			return
-		}
-	}
-}
-
-func (c AuthController) error(w http.ResponseWriter, code int, err error) {
-	c.respond(w, code, map[string]interface{}{"status": code, "errors": err})
 }
