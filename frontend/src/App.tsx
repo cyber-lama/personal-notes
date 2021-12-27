@@ -15,7 +15,7 @@ function App() {
     });
     return await response.json(); // parses JSON response into native JavaScript objects
   }
-  postData('/api/register', { username: "test", email: "test", password: "test" })
+  postData('/api/register', { username: "s", email: "", password: "" })
       .then((data) => {
         console.log(data); // JSON data parsed by `response.json()` call
       });

@@ -1,4 +1,4 @@
-package user
+package usercontroller
 
 import (
 	"github.com/jmoiron/sqlx"
