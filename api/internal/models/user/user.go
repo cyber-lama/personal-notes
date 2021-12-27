@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
@@ -18,11 +19,7 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 		l.Error("db.Query error ", err)
 		return nil, err
 	}
-	err = query.Scan(&u.ID)
-	if err != nil {
-		l.Error("query.Scan error ", err)
-		return nil, err
-	}
+	fmt.Println(query.NextResultSet())
 	return u, nil
 }
 func (u *User) Find(db *sqlx.DB, id int) (*User, error) {

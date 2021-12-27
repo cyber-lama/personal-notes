@@ -57,6 +57,7 @@ func (c AuthController) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			c.logger.Error("decode", err)
 			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
@@ -66,14 +67,16 @@ func (c AuthController) Register() http.HandlerFunc {
 			Username: req.Username,
 		}
 		if err := c.registerValidate(u); err != nil {
+			c.logger.Error("registerValidate", err)
 			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
 		res, err := u.Create(c.db.DB, c.logger)
 		if err != nil {
+			c.logger.Error("Create ", err)
 			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
-		c.base.Respond(w, http.StatusOK, res)
+		c.base.Message(w, http.StatusOK, res)
 	}
 }
