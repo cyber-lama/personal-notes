@@ -36,11 +36,6 @@ func (c AuthController) registerValidate(u *user.User) error {
 			validation.Length(4, 100).Error("Длинна поля email от 4 до 100 символов"),
 		),
 		validation.Field(
-			&u.Username,
-			validation.Required.Error("Поле username обязательно для заполнения"),
-			validation.Length(2, 100).Error("Длинна поля username от 2 до 100 символов"),
-		),
-		validation.Field(
 			&u.Password,
 			validation.Required.Error("Поле password обязательно для заполнения"),
 			validation.Length(6, 100).Error("Длинна поля password от 2 до 100 символов"),
@@ -50,30 +45,25 @@ func (c AuthController) registerValidate(u *user.User) error {
 
 func (c AuthController) Register() http.HandlerFunc {
 	type request struct {
-		Username string `json:"username"`
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			c.logger.Error("decode", err)
 			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
 		u := &user.User{
 			Email:    req.Email,
 			Password: req.Password,
-			Username: req.Username,
 		}
 		if err := c.registerValidate(u); err != nil {
-			c.logger.Error("registerValidate", err)
 			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}
 		res, err := u.Create(c.db.DB, c.logger)
 		if err != nil {
-			c.logger.Error("Create ", err)
 			c.base.Error(w, http.StatusBadRequest, err)
 			return
 		}

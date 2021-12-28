@@ -1,27 +1,44 @@
 package user
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
 type User struct {
-	ID       int    `json:"id"`
+	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password,omitempty"`
 	Email    string `json:"email,omitempty"`
 }
 
 func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
-	query, err := db.Query("INSERT INTO users (username, password, Email) VALUES ($1, $2, $3)", u.Username, u.Password, u.Email)
+	_, err := u.checkUniqueness(db, l)
 	if err != nil {
-		l.Error("db.Query error ", err)
 		return nil, err
 	}
-	fmt.Println(query.NextResultSet())
+	err = db.QueryRow("INSERT INTO users (email, password) VALUES ($1, $2) returning id", u.Email, u.Password).Scan(&u.ID)
+
+	if err != nil {
+		return nil, err
+	}
 	return u, nil
 }
+
+func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) (bool, error) {
+	e := sql.Row{}
+	q := db.QueryRow("SELECT * FROM users where email = $1", u.Email)
+	if &e == q {
+		return true, nil
+	}
+	err := errors.New("email: Данный email уже используется")
+	fmt.Print(err)
+	return false, err
+}
+
 func (u *User) Find(db *sqlx.DB, id int) (*User, error) {
 	return nil, nil
 }
