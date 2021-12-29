@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import * as React from "react";
 import './App.css';
 
 function App() {
@@ -15,8 +15,8 @@ function App() {
     });
     return await response.json(); // parses JSON response into native JavaScript objects
   }
-  useEffect(() => {
-    postData('/api/register', {email: "tipira@gmail.com", password: "tipira21" })
+  React.useEffect(() => {
+    postData('/api/register', {email: "tipir2a@gmail.com", password: "tipira21" })
 
         .then((data) => {
 
