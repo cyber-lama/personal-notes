@@ -28,15 +28,17 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 	return u, nil
 }
 
+//TODO not working
 func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) (bool, error) {
 	e := sql.Row{}
 	q := db.QueryRow("SELECT * FROM users where email = $1", u.Email)
+	fmt.Println("empty row", e)
+	fmt.Println("select", q)
 	if &e == q {
 		return true, nil
 	}
-	err := errors.New("email: Данный email уже используется")
-	fmt.Print(err)
-	return false, err
+
+	return false, errors.New("email: Данный email уже используется")
 }
 
 func (u *User) Find(db *sqlx.DB, id int) (*User, error) {

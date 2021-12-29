@@ -18,7 +18,7 @@ type AuthController struct {
 }
 
 func New(db *store.Store, l *logrus.Logger) *AuthController {
-	b := controllers.New()
+	b := controllers.New(l)
 	return &AuthController{
 		base:   b,
 		db:     db,
