@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -15,7 +16,7 @@ type User struct {
 }
 
 func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
-	_, err := u.checkUniqueness(db, l)
+	err := u.checkUniqueness(db, l)
 	if err != nil {
 		return nil, err
 	}
@@ -27,16 +28,19 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 	return u, nil
 }
 
-func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) (bool, error) {
+func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) error {
 	var result User
 	err := db.Get(&result, "SELECT * FROM users where email = $1", u.Email)
 	switch err {
 	case nil:
-		return false, errors.New("email: Данный email уже используется")
+		errStr := map[string]string{"email": "Данный email уже используется"}
+		errVar, _ := json.Marshal(errStr)
+		l.Error(string(errVar))
+		return errors.New(string("email: Данный email уже используется"))
 	case sql.ErrNoRows:
-		return true, nil
+		return nil
 	default:
-		return false, err
+		return err
 	}
 }
 
