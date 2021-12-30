@@ -1,10 +1,11 @@
 package exception
 
-type Exception struct {
-	err error
-}
+import "encoding/json"
 
-func New(obj map[string]interface{}) *Exception {
+// ExFields Created custom errors that are subscribed to the Errors interface
+type ExFields map[string]interface{}
 
-	return &Exception{}
+func (e ExFields) Error() string {
+	value, _ := json.Marshal(e)
+	return string(value)
 }

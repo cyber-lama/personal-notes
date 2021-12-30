@@ -16,7 +16,7 @@ function App() {
     return await response.json(); // parses JSON response into native JavaScript objects
   }
   React.useEffect(() => {
-    postData('/api/register', {email: "", password: "tipira21" })
+    postData('/api/register', {email: "test@gmail.com", password: "tipira21" })
 
         .then((data) => {
 

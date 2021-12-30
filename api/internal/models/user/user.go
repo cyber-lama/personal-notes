@@ -2,8 +2,7 @@ package user
 
 import (
 	"database/sql"
-	"encoding/json"
-	"errors"
+	"github.com/cyber-lama/personal-notes/api/internal/exceptions/exception"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
@@ -33,10 +32,8 @@ func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) error {
 	err := db.Get(&result, "SELECT * FROM users where email = $1", u.Email)
 	switch err {
 	case nil:
-		errStr := map[string]string{"email": "Данный email уже используется"}
-		errVar, _ := json.Marshal(errStr)
-		l.Error(string(errVar))
-		return errors.New(string("email: Данный email уже используется"))
+		m := exception.ExFields{"email": "Данный email уже используется"}
+		return &m
 	case sql.ErrNoRows:
 		return nil
 	default:

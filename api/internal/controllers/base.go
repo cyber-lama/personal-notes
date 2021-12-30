@@ -29,6 +29,5 @@ func (c BaseController) Message(w http.ResponseWriter, code int, data interface{
 	c.Respond(w, code, map[string]interface{}{"status": code, "data": data})
 }
 func (c BaseController) Error(w http.ResponseWriter, code int, err error) {
-	c.logger.Error("LORGUS ERROR1: ", err)
 	c.Respond(w, code, map[string]interface{}{"status": code, "errors": err})
 }

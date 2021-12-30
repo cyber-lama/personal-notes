@@ -4,7 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type User struct {
+type UserController struct {
 	db *sqlx.DB
 }
 
