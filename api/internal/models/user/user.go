@@ -2,9 +2,11 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/cyber-lama/personal-notes/api/internal/exceptions/exception"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -18,7 +20,7 @@ type User struct {
 }
 
 func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
-	//Substituting the Moscow time in the fields CreatedAt & UpdatedAt
+	//Add the Moscow time in the fields CreatedAt & UpdatedAt
 	moscowTime, err := u.timeNow()
 	if err != nil {
 		return nil, err
@@ -30,9 +32,10 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Create User
 	err = db.QueryRow(`
 		INSERT INTO users (email, password, created_at, updated_at) VALUES ($1, $2, $3, $4) returning id
-	`, u.Email, u.Password, u.CreatedAt, u.UpdatedAt).Scan(&u.ID)
+	`, u.Email, "", u.CreatedAt, u.UpdatedAt).Scan(&u.ID)
 
 	if err != nil {
 		return nil, err
@@ -59,6 +62,16 @@ func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) error {
 	default:
 		return err
 	}
+}
+
+func (u *User) HashPassword(db *sqlx.DB, str string) {
+	hash, _ := bcrypt.GenerateFromPassword([]byte(str), 14)
+	fmt.Println(hash)
+}
+
+func (u *User) CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func (u *User) Find(db *sqlx.DB, id int) (*User, error) {

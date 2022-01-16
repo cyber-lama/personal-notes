@@ -8,6 +8,7 @@ import (
 type Config struct {
 	HTTPPort    string
 	LogLevel    string
+	TTL         string
 	DatabaseURL string
 }
 
@@ -21,12 +22,13 @@ func NewConfig() *Config {
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
-
+	ttl := os.Getenv("TTL")
 	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 	return &Config{
 		HTTPPort:    ":" + prt,
 		LogLevel:    lvl,
+		TTL:         ttl,
 		DatabaseURL: psqlconn,
 	}
 }
