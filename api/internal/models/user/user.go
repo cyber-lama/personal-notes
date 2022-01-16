@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/cyber-lama/personal-notes/api/internal/exceptions/exception"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -40,7 +39,7 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	go u.hashPassword(db, u.Password)
 	return u, nil
 }
 
@@ -64,9 +63,9 @@ func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) error {
 	}
 }
 
-func (u *User) HashPassword(db *sqlx.DB, str string) {
+func (u *User) hashPassword(db *sqlx.DB, str string) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(str), 14)
-	fmt.Println(hash)
+	db.QueryRow(`UPDATE users SET password = ($1) WHERE id = ($2)`, hash, u.ID)
 }
 
 func (u *User) CheckPasswordHash(password, hash string) bool {
