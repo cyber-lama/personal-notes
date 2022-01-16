@@ -16,6 +16,7 @@ type User struct {
 	Email     string          `json:"email"`
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`
+	Token     string          `json:"token,omitempty"`
 }
 
 func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
@@ -39,6 +40,13 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// create user token
+	err = u.CreateToken(db, u.Email)
+	if err != nil {
+		return nil, err
+	}
+
 	// The user has already been saved,
 	// using the goroutine we save the password asynchronously,
 	// since hashing takes more than a second
@@ -79,10 +87,37 @@ func (u *User) CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
+func (u *User) CreateToken(db *sqlx.DB, email string) error {
+	// hashing email, this is token
+	b, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+
+	moscowTime, err := u.timeNow()
+	if err != nil {
+		return err
+	}
+
+	t := &Token{
+		UserID:    u.ID,
+		Token:     b,
+		CreatedAt: moscowTime,
+		UpdatedAt: moscowTime,
+	}
+	res, err := t.Create(db)
+	if err != nil {
+		return err
+	}
+	u.Token = string(res.Token)
+	return nil
+}
+
 // Sanitize Clean Password property
 func (u *User) Sanitize() {
 	u.Password = ""
 }
+
 func (u *User) Find(db *sqlx.DB, id int) (*User, error) {
 	return nil, nil
 }

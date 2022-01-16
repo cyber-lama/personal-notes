@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS users_token(
         REFERENCES users(id)
         ON DELETE CASCADE,
     token       varchar not null unique,
-    created_at  timestamp not null
+    created_at  timestamp not null,
+    updated_at  timestamp not null
 );
