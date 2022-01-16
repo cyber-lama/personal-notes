@@ -16,7 +16,7 @@ type User struct {
 	Email     string          `json:"email"`
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`
-	Token     string          `json:"token,omitempty"`
+	Token     string          `json:"token"`
 }
 
 func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
@@ -89,15 +89,8 @@ func (u *User) CheckPasswordHash(password, hash string) bool {
 
 func (u *User) CreateToken(db *sqlx.DB, email string) error {
 	// hashing email, this is token
-	b, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.MinCost)
-	if err != nil {
-		return err
-	}
-
-	moscowTime, err := u.timeNow()
-	if err != nil {
-		return err
-	}
+	b, _ := bcrypt.GenerateFromPassword([]byte(email), bcrypt.MinCost)
+	moscowTime, _ := u.timeNow()
 
 	t := &Token{
 		UserID:    u.ID,
