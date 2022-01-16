@@ -11,11 +11,11 @@ import (
 
 type User struct {
 	ID        uint            `json:"id"`
-	Username  *sql.NullString `json:"username"`
-	Password  string          `json:"password,omitempty"`
-	Email     string          `json:"email,omitempty"`
-	CreatedAt time.Time       `json:"created_at,omitempty"`
-	UpdatedAt time.Time       `json:"updated_at,omitempty"`
+	Username  *sql.NullString `json:"username,omitempty"`
+	Password  string          `json:"-"`
+	Email     string          `json:"email"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
 }
 
 func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
@@ -39,7 +39,13 @@ func (u *User) Create(db *sqlx.DB, l *logrus.Logger) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	// The user has already been saved,
+	// using the goroutine we save the password asynchronously,
+	// since hashing takes more than a second
 	go u.hashPassword(db, u.Password)
+
+	u.Sanitize()
+
 	return u, nil
 }
 
@@ -73,6 +79,10 @@ func (u *User) CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
+// Sanitize Clean Password property
+func (u *User) Sanitize() {
+	u.Password = ""
+}
 func (u *User) Find(db *sqlx.DB, id int) (*User, error) {
 	return nil, nil
 }
