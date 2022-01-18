@@ -65,7 +65,7 @@ func (u *User) checkUniqueness(db *sqlx.DB, l *logrus.Logger) error {
 	}
 	result.CreatedAt = moscowTime
 	result.UpdatedAt = moscowTime
-	err = db.Get(&result, "SELECT id FROM users where email = $1", u.Email)
+	err = db.Get(&result, "SELECT id FROM users where email = $1 LIMIT 1", u.Email)
 	switch err {
 	case nil:
 		m := exception.ExFields{"email": "Данный email уже используется"}

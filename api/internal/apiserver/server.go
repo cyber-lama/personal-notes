@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"github.com/cyber-lama/personal-notes/api/internal/controllers/authcontroller"
+	"github.com/cyber-lama/personal-notes/api/internal/controllers/usercontroller"
 	"github.com/cyber-lama/personal-notes/api/internal/store"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -30,7 +31,9 @@ func (s *server) configureRouter() {
 	//POST
 	authController := authcontroller.New(s.store, s.logger)
 	s.router.HandleFunc("/register", authController.Register()).Methods("POST")
-
+	//GET
+	userController := usercontroller.New(s.store, s.logger)
+	s.router.HandleFunc("/user-info", userController.GetInfo()).Methods("GET")
 }
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
