@@ -8,6 +8,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"net/http"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 type AuthMiddleware struct {
@@ -44,14 +46,16 @@ func (a AuthMiddleware) CheckAuth(db *sqlx.DB) error {
 		return err
 	}
 	//check token
-	_, err := t.CheckToken(db)
+	token, err := t.CheckToken(db)
 	if err != nil {
 		return err
 	}
+	out := strings.Split(a.Token, "|")
+	valInt, _ := strconv.ParseInt(out[0], 10, 64)
 	// ------------------------------------------
-	//if token.UserID != c.ID {
-	//	m := exception.ExFields{"token": "Токен не соответствует пользователю"}
-	//	return m
-	//}
+	if token.UserID != uint(valInt) {
+		m := exception.ExFields{"token": "Токен не соответствует пользователю"}
+		return m
+	}
 	return nil
 }
