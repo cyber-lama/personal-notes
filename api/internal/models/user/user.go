@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/cyber-lama/personal-notes/api/internal/exceptions/exception"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -91,10 +92,10 @@ func (u *User) CreateToken(db *sqlx.DB, email string) error {
 	// hashing email, this is token
 	b, _ := bcrypt.GenerateFromPassword([]byte(email), bcrypt.MinCost)
 	moscowTime, _ := u.timeNow()
-
+	strToken := fmt.Sprintf("%d|%s", u.ID, string(b))
 	t := &Token{
 		UserID:    u.ID,
-		Token:     b,
+		Token:     strToken,
 		CreatedAt: moscowTime,
 		UpdatedAt: moscowTime,
 	}

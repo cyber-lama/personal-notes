@@ -10,7 +10,7 @@ import (
 type Token struct {
 	ID        uint      `db:"id"`
 	UserID    uint      `db:"user_id"`
-	Token     []byte    `db:"token"`
+	Token     string    `db:"token"`
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }
